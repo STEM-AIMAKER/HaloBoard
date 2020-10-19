@@ -58,7 +58,6 @@ namespace haloboard {
          * @param rgb RGB color of the LED
          */
         //% blockId="showColor" block="%board|show color %rgb=pixel_colors" 
-        //% weight=85 blockGap=8
         //% board.defl=board
         //% parts="haloboard"
         showColor(rgb: number) {
@@ -73,7 +72,6 @@ namespace haloboard {
          * @param endHue the end hue value for the rainbow, eg: 360
          */
         //% blockId="showRainbow" block="%board|show rainbow from %startHue|to %endHue" 
-        //% weight=85 blockGap=8
         //% board.defl=board
         //% parts="haloboard"
         showRainbow(startHue: number = 1, endHue: number = 360) {
@@ -141,8 +139,6 @@ namespace haloboard {
          * @param rgb RGB color of the LED
          */
         //% blockId="setPixelColor" block="%board|set pixel color at %pixeloffset|to %rgb=colors" 
-        //% blockGap=8
-        //% weight=80
         //% board.defl=board
         //% parts="haloboard" advanced=true
         setPixelColor(pixeloffset: number, rgb: number): void {
@@ -156,8 +152,6 @@ namespace haloboard {
          * @param white brightness of the white LED
          */
         //% blockId="setPixelWhiteLED" block="%board|set pixel white LED at %pixeloffset|to %white" 
-        //% blockGap=8
-        //% weight=80
         //% board.defl=board
         //% parts="haloboard" advanced=true
         setPixelWhiteLED(pixeloffset: number, white: number): void {            
@@ -169,8 +163,7 @@ namespace haloboard {
         /** 
          * Send all the changes to the board.
          */
-        //% blockId="show" block="%board|show" blockGap=8
-        //% weight=79
+        //% blockId="show" block="%board|show"
         //% board.defl=board
         //% parts="haloboard"
         show() {
@@ -182,7 +175,6 @@ namespace haloboard {
          * You need to call ``show`` to make the changes visible.
          */
         //% blockId="clear" block="%board|clear"
-        //% weight=76
         //% board.defl=board
         //% parts="haloboard"
          clear(): void {
@@ -193,10 +185,9 @@ namespace haloboard {
         /**
          * Gets the number of pixels declared on the board
          */
-        //% blockId="length" block="%board|length" blockGap=8
-        //% weight=60 advanced=true
+        //% blockId="length" block="%board|length"
         //% board.defl=board
-        //% parts="haloboard"
+        //% parts="haloboard" advanced=true
         length() {
             return this._length;
         }
@@ -205,8 +196,7 @@ namespace haloboard {
          * Set the brightness of the board. This flag only applies to future operation.
          * @param brightness a measure of LED brightness in 0-255. eg: 255
          */
-        //% blockId="setbrightness" block="%board|set brightness %brightness" blockGap=8
-        //% weight=59
+        //% blockId="setbrightness" block="%board|set brightness %brightness"
         //% board.defl=board
         //% parts="haloboard" advanced=true
         setBrightness(brightness: number): void {
@@ -216,8 +206,7 @@ namespace haloboard {
         /**
          * Apply brightness to current colors using a quadratic easing function.
          **/
-        //% blockId="easeBrightness" block="%board|ease brightness" blockGap=8
-        //% weight=58
+        //% blockId="easeBrightness" block="%board|ease brightness"
         //% board.defl=board
         //% parts="haloboard" advanced=true
         easeBrightness(): void {
@@ -278,7 +267,7 @@ namespace haloboard {
         /**
          * Estimates the electrical current (mA) consumed by the current light configuration.
          */
-        //% weight=9 blockId=neopixel_power block="%board|power (mA)"
+        //% weight=9 blockId=power block="%board|power (mA)"
         //% board.defl=board
         //% parts="haloboard" advanced=true
         power(): number {
@@ -383,7 +372,6 @@ namespace haloboard {
      * @param numleds number of leds in the board, eg: 10,12
      */
     //% blockId="create" block="haloboard at pin %pin|with %numleds|leds as %mode"
-    //% weight=90 blockGap=8
     //% trackArgs=0,2
     //% blockSetVariable=board
     //% parts="haloboard"
@@ -405,7 +393,6 @@ namespace haloboard {
      * @param green value of the green channel between 0 and 255. eg: 255
      * @param blue value of the blue channel between 0 and 255. eg: 255
      */
-    //% weight=1
     //% blockId="rgb" block="red %red|green %green|blue %blue"
     //% parts="haloboard" advanced=true
     export function rgb(red: number, green: number, blue: number): number {
@@ -415,7 +402,6 @@ namespace haloboard {
     /**
      * Gets the RGB value of a known color
     */
-    //% weight=2 blockGap=8
     //% blockId="colors" block="%color"
     //% parts="haloboard" advanced=true
     export function colors(color: PixelColors): number {
