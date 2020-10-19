@@ -44,7 +44,7 @@ namespace haloboard {
     /**
      * A Halo Board
      */
-    export class Board {
+    export class board {
         buf: Buffer;
         pin: DigitalPin;
         
@@ -57,7 +57,7 @@ namespace haloboard {
          * Shows all LEDs to a given color (range 0-255 for r, g, b). 
          * @param rgb RGB color of the LED
          */
-        //% blockId="showColor" block="%haloboard|show color %rgb=neopixel_colors" 
+        //% blockId="showColor" block="show color %rgb=pixel_colors" 
         //% weight=85 blockGap=8
         //% parts="haloboard"
         showColor(rgb: number) {
@@ -71,7 +71,7 @@ namespace haloboard {
          * @param startHue the start hue value for the rainbow, eg: 1
          * @param endHue the end hue value for the rainbow, eg: 360
          */
-        //% blockId="showRainbow" block="%haloboard|show rainbow from %startHue|to %endHue" 
+        //% blockId="showRainbow" block="show rainbow from %startHue|to %endHue" 
         //% weight=85 blockGap=8
         //% parts="haloboard"
         showRainbow(startHue: number = 1, endHue: number = 360) {
@@ -138,7 +138,7 @@ namespace haloboard {
          * @param pixeloffset position
          * @param rgb RGB color of the LED
          */
-        //% blockId="setPixelColor" block="%haloboard|set pixel color at %pixeloffset|to %rgb=colors" 
+        //% blockId="setPixelColor" block="set pixel color at %pixeloffset|to %rgb=colors" 
         //% blockGap=8
         //% weight=80
         //% parts="haloboard" advanced=true
@@ -152,7 +152,7 @@ namespace haloboard {
          * @param pixeloffset position of the LED in the board
          * @param white brightness of the white LED
          */
-        //% blockId="setPixelWhiteLED" block="%haloboard|set pixel white LED at %pixeloffset|to %white" 
+        //% blockId="setPixelWhiteLED" block="set pixel white LED at %pixeloffset|to %white" 
         //% blockGap=8
         //% weight=80
         //% parts="haloboard" advanced=true
@@ -165,7 +165,7 @@ namespace haloboard {
         /** 
          * Send all the changes to the board.
          */
-        //% blockId="show" block="%haloboard|show" blockGap=8
+        //% blockId="show" block="show" blockGap=8
         //% weight=79
         //% parts="haloboard"
         show() {
@@ -176,7 +176,7 @@ namespace haloboard {
          * Turn off all LEDs.
          * You need to call ``show`` to make the changes visible.
          */
-        //% blockId="clear" block="%haloboard|clear"
+        //% blockId="clear" block="clear"
         //% weight=76
         //% parts="haloboard"
          clear(): void {
@@ -187,7 +187,7 @@ namespace haloboard {
         /**
          * Gets the number of pixels declared on the board
          */
-        //% blockId="length" block="%haloboard|length" blockGap=8
+        //% blockId="length" block="length" blockGap=8
         //% weight=60 advanced=true
         //% parts="haloboard"
         length() {
@@ -198,7 +198,7 @@ namespace haloboard {
          * Set the brightness of the board. This flag only applies to future operation.
          * @param brightness a measure of LED brightness in 0-255. eg: 255
          */
-        //% blockId="setbrightness" block="%haloboard|set brightness %brightness" blockGap=8
+        //% blockId="setbrightness" block="set brightness %brightness" blockGap=8
         //% weight=59
         //% parts="haloboard" advanced=true
         setBrightness(brightness: number): void {
@@ -208,7 +208,7 @@ namespace haloboard {
         /**
          * Apply brightness to current colors using a quadratic easing function.
          **/
-        //% blockId="easeBrightness" block="%haloboard|ease brightness" blockGap=8
+        //% blockId="easeBrightness" block="ease brightness" blockGap=8
         //% weight=58
         //% parts="haloboard" advanced=true
         easeBrightness(): void {
@@ -238,20 +238,20 @@ namespace haloboard {
          * @param length number of LEDs in the range. eg: 4
          */
         //% weight=89
-        //% blockId="range" block="%haloboard|range from %start|with %length|leds"
+        //% blockId="range" block="range from %start|with %length|leds"
         //% blockSetVariable=range
         //% parts="haloboard"
-        range(start: number, length: number): Board {
+        range(start: number, length: number): board {
             start = start >> 0;
             length = length >> 0;
-            let board = new Board();
-            board.buf = this.buf;
-            board.pin = this.pin;
-            board.brightness = this.brightness;
-            board.start = this.start + Math.clamp(0, this._length - 1, start);
-            board._length = Math.clamp(0, this._length - (board.start - this.start), length);
-            board._mode = this._mode;
-            return board;
+            let myboard = new board();
+            myboard.buf = this.buf;
+            myboard.pin = this.pin;
+            myboard.brightness = this.brightness;
+            myboard.start = this.start + Math.clamp(0, this._length - 1, start);
+            myboard._length = Math.clamp(0, this._length - (myboard.start - this.start), length);
+            myboard._mode = this._mode;
+            return myboard;
         }
 
         /**
@@ -268,7 +268,7 @@ namespace haloboard {
         /**
          * Estimates the electrical current (mA) consumed by the current light configuration.
          */
-        //% weight=9 blockId=neopixel_power block="%haloboard|power (mA)"
+        //% weight=9 blockId=neopixel_power block="power (mA)"
         //% parts="haloboard" advanced=true
         power(): number {
             const stride = this._mode === Mode.RGBW ? 4 : 3;
@@ -371,21 +371,21 @@ namespace haloboard {
      * @param pin the pin where the neopixel is connected.
      * @param numleds number of leds in the board, eg: 10,12
      */
-    //% blockId="create" block="HaloBoard at pin %pin|with %numleds|leds as %mode"
+    //% blockId="create" block="haloboard at pin %pin|with %numleds|leds as %mode"
     //% weight=90 blockGap=8
     //% trackArgs=0,2
     //% blockSetVariable=board
     //% parts="haloboard"
-    export function create(pin: DigitalPin, numleds: number, mode: Mode): Board {
-        let board = new Board();
+    export function create(pin: DigitalPin, numleds: number, mode: Mode): board {
+        let myboard = new board();
         let stride = mode === Mode.RGBW ? 4 : 3;
-        board.buf = pins.createBuffer(numleds * stride);
-        board.start = 0;
-        board._length = numleds;
-        board._mode = mode;
-        board.setBrightness(128)
-        board.setPin(pin)
-        return board;
+        myboard.buf = pins.createBuffer(numleds * stride);
+        myboard.start = 0;
+        myboard._length = numleds;
+        myboard._mode = mode;
+        myboard.setBrightness(128)
+        myboard.setPin(pin)
+        return myboard;
     }
 
     /**
