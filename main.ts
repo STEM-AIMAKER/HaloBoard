@@ -59,6 +59,7 @@ namespace haloboard {
          */
         //% blockId="showColor" block="%haloboard|show color %rgb=neopixel_colors" 
         //% weight=85 blockGap=8
+        //% parts="haloboard"
         showColor(rgb: number) {
             rgb = rgb >> 0;
             this.setAllRGB(rgb);
@@ -72,6 +73,7 @@ namespace haloboard {
          */
         //% blockId="showRainbow" block="%haloboard|show rainbow from %startHue|to %endHue" 
         //% weight=85 blockGap=8
+        //% parts="haloboard"
         showRainbow(startHue: number = 1, endHue: number = 360) {
             if (this._length <= 0) return;
 
@@ -139,7 +141,7 @@ namespace haloboard {
         //% blockId="setPixelColor" block="%haloboard|set pixel color at %pixeloffset|to %rgb=colors" 
         //% blockGap=8
         //% weight=80
-        //% advanced=true
+        //% parts="haloboard" advanced=true
         setPixelColor(pixeloffset: number, rgb: number): void {
             this.setPixelRGB(pixeloffset >> 0, rgb >> 0);
         }
@@ -153,7 +155,7 @@ namespace haloboard {
         //% blockId="setPixelWhiteLED" block="%haloboard|set pixel white LED at %pixeloffset|to %white" 
         //% blockGap=8
         //% weight=80
-        //% advanced=true
+        //% parts="haloboard" advanced=true
         setPixelWhiteLED(pixeloffset: number, white: number): void {            
             if (this._mode === Mode.RGBW) {
                 this.setPixelW(pixeloffset >> 0, white >> 0);
@@ -165,6 +167,7 @@ namespace haloboard {
          */
         //% blockId="show" block="%haloboard|show" blockGap=8
         //% weight=79
+        //% parts="haloboard"
         show() {
             ws2812b.sendBuffer(this.buf, this.pin);
         }
@@ -175,6 +178,7 @@ namespace haloboard {
          */
         //% blockId="clear" block="%haloboard|clear"
         //% weight=76
+        //% parts="haloboard"
          clear(): void {
             const stride = this._mode === Mode.RGBW ? 4 : 3;
             this.buf.fill(0, this.start * stride, this._length * stride);
@@ -185,6 +189,7 @@ namespace haloboard {
          */
         //% blockId="length" block="%haloboard|length" blockGap=8
         //% weight=60 advanced=true
+        //% parts="haloboard"
         length() {
             return this._length;
         }
@@ -195,7 +200,7 @@ namespace haloboard {
          */
         //% blockId="setbrightness" block="%haloboard|set brightness %brightness" blockGap=8
         //% weight=59
-        //% advanced=true
+        //% parts="haloboard" advanced=true
         setBrightness(brightness: number): void {
             this.brightness = brightness & 0xff;
         }
@@ -205,7 +210,7 @@ namespace haloboard {
          **/
         //% blockId="easeBrightness" block="%haloboard|ease brightness" blockGap=8
         //% weight=58
-        //% advanced=true
+        //% parts="haloboard" advanced=true
         easeBrightness(): void {
             const stride = this._mode === Mode.RGBW ? 4 : 3;
             const br = this.brightness;
@@ -235,6 +240,7 @@ namespace haloboard {
         //% weight=89
         //% blockId="range" block="%haloboard|range from %start|with %length|leds"
         //% blockSetVariable=range
+        //% parts="haloboard"
         range(start: number, length: number): Board {
             start = start >> 0;
             length = length >> 0;
@@ -252,7 +258,7 @@ namespace haloboard {
          * Set the pin where the neopixel is connected, defaults to P0.
          */
         //% weight=10
-        //% advanced=true
+        //% parts="haloboard" advanced=true
         setPin(pin: DigitalPin): void {
             this.pin = pin;
             pins.digitalWritePin(this.pin, 0);
@@ -263,7 +269,7 @@ namespace haloboard {
          * Estimates the electrical current (mA) consumed by the current light configuration.
          */
         //% weight=9 blockId=neopixel_power block="%haloboard|power (mA)"
-        //% advanced=true
+        //% parts="haloboard" advanced=true
         power(): number {
             const stride = this._mode === Mode.RGBW ? 4 : 3;
             const end = this.start + this._length;
@@ -369,6 +375,7 @@ namespace haloboard {
     //% weight=90 blockGap=8
     //% trackArgs=0,2
     //% blockSetVariable=board
+    //% parts="haloboard"
     export function create(pin: DigitalPin, numleds: number, mode: Mode): Board {
         let board = new Board();
         let stride = mode === Mode.RGBW ? 4 : 3;
@@ -389,7 +396,7 @@ namespace haloboard {
      */
     //% weight=1
     //% blockId="rgb" block="red %red|green %green|blue %blue"
-    //% advanced=true
+    //% parts="haloboard" advanced=true
     export function rgb(red: number, green: number, blue: number): number {
         return packRGB(red, green, blue);
     }
@@ -399,7 +406,7 @@ namespace haloboard {
     */
     //% weight=2 blockGap=8
     //% blockId="colors" block="%color"
-    //% advanced=true
+    //% parts="haloboard" advanced=true
     export function colors(color: PixelColors): number {
         return color;
     }
@@ -427,6 +434,7 @@ namespace haloboard {
      * @param l luminosity from 0 to 99
      */
     //% blockId=hsl block="hue %h|saturation %s|luminosity %l"
+    //% parts="haloboard"
     export function hsl(h: number, s: number, l: number): number {
         h = Math.round(h);
         s = Math.round(s);
