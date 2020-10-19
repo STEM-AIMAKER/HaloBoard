@@ -57,8 +57,9 @@ namespace haloboard {
          * Shows all LEDs to a given color (range 0-255 for r, g, b). 
          * @param rgb RGB color of the LED
          */
-        //% blockId="showColor" block="show color %rgb=pixel_colors" 
+        //% blockId="showColor" block="%board|show color %rgb=pixel_colors" 
         //% weight=85 blockGap=8
+        //% board.defl=board
         //% parts="haloboard"
         showColor(rgb: number) {
             rgb = rgb >> 0;
@@ -71,8 +72,9 @@ namespace haloboard {
          * @param startHue the start hue value for the rainbow, eg: 1
          * @param endHue the end hue value for the rainbow, eg: 360
          */
-        //% blockId="showRainbow" block="show rainbow from %startHue|to %endHue" 
+        //% blockId="showRainbow" block="%board|show rainbow from %startHue|to %endHue" 
         //% weight=85 blockGap=8
+        //% board.defl=board
         //% parts="haloboard"
         showRainbow(startHue: number = 1, endHue: number = 360) {
             if (this._length <= 0) return;
@@ -138,9 +140,10 @@ namespace haloboard {
          * @param pixeloffset position
          * @param rgb RGB color of the LED
          */
-        //% blockId="setPixelColor" block="set pixel color at %pixeloffset|to %rgb=colors" 
+        //% blockId="setPixelColor" block="%board|set pixel color at %pixeloffset|to %rgb=colors" 
         //% blockGap=8
         //% weight=80
+        //% board.defl=board
         //% parts="haloboard" advanced=true
         setPixelColor(pixeloffset: number, rgb: number): void {
             this.setPixelRGB(pixeloffset >> 0, rgb >> 0);
@@ -152,9 +155,10 @@ namespace haloboard {
          * @param pixeloffset position of the LED in the board
          * @param white brightness of the white LED
          */
-        //% blockId="setPixelWhiteLED" block="set pixel white LED at %pixeloffset|to %white" 
+        //% blockId="setPixelWhiteLED" block="%board|set pixel white LED at %pixeloffset|to %white" 
         //% blockGap=8
         //% weight=80
+        //% board.defl=board
         //% parts="haloboard" advanced=true
         setPixelWhiteLED(pixeloffset: number, white: number): void {            
             if (this._mode === Mode.RGBW) {
@@ -165,8 +169,9 @@ namespace haloboard {
         /** 
          * Send all the changes to the board.
          */
-        //% blockId="show" block="show" blockGap=8
+        //% blockId="show" block="%board|show" blockGap=8
         //% weight=79
+        //% board.defl=board
         //% parts="haloboard"
         show() {
             ws2812b.sendBuffer(this.buf, this.pin);
@@ -176,8 +181,9 @@ namespace haloboard {
          * Turn off all LEDs.
          * You need to call ``show`` to make the changes visible.
          */
-        //% blockId="clear" block="clear"
+        //% blockId="clear" block="%board|clear"
         //% weight=76
+        //% board.defl=board
         //% parts="haloboard"
          clear(): void {
             const stride = this._mode === Mode.RGBW ? 4 : 3;
@@ -187,8 +193,9 @@ namespace haloboard {
         /**
          * Gets the number of pixels declared on the board
          */
-        //% blockId="length" block="length" blockGap=8
+        //% blockId="length" block="%board|length" blockGap=8
         //% weight=60 advanced=true
+        //% board.defl=board
         //% parts="haloboard"
         length() {
             return this._length;
@@ -198,8 +205,9 @@ namespace haloboard {
          * Set the brightness of the board. This flag only applies to future operation.
          * @param brightness a measure of LED brightness in 0-255. eg: 255
          */
-        //% blockId="setbrightness" block="set brightness %brightness" blockGap=8
+        //% blockId="setbrightness" block="%board|set brightness %brightness" blockGap=8
         //% weight=59
+        //% board.defl=board
         //% parts="haloboard" advanced=true
         setBrightness(brightness: number): void {
             this.brightness = brightness & 0xff;
@@ -208,8 +216,9 @@ namespace haloboard {
         /**
          * Apply brightness to current colors using a quadratic easing function.
          **/
-        //% blockId="easeBrightness" block="ease brightness" blockGap=8
+        //% blockId="easeBrightness" block="%board|ease brightness" blockGap=8
         //% weight=58
+        //% board.defl=board
         //% parts="haloboard" advanced=true
         easeBrightness(): void {
             const stride = this._mode === Mode.RGBW ? 4 : 3;
@@ -238,8 +247,9 @@ namespace haloboard {
          * @param length number of LEDs in the range. eg: 4
          */
         //% weight=89
-        //% blockId="range" block="range from %start|with %length|leds"
+        //% blockId="range" block="%board|range from %start|with %length|leds"
         //% blockSetVariable=range
+        //% board.defl=board
         //% parts="haloboard"
         range(start: number, length: number): board {
             start = start >> 0;
@@ -255,7 +265,7 @@ namespace haloboard {
         }
 
         /**
-         * Set the pin where the neopixel is connected, defaults to P0.
+         * Set the pin where the haloboard is connected, defaults to P0.
          */
         //% weight=10
         //% parts="haloboard" advanced=true
@@ -268,7 +278,8 @@ namespace haloboard {
         /**
          * Estimates the electrical current (mA) consumed by the current light configuration.
          */
-        //% weight=9 blockId=neopixel_power block="power (mA)"
+        //% weight=9 blockId=neopixel_power block="%board|power (mA)"
+        //% board.defl=board
         //% parts="haloboard" advanced=true
         power(): number {
             const stride = this._mode === Mode.RGBW ? 4 : 3;
