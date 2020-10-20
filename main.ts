@@ -57,7 +57,7 @@ namespace haloboard {
          * Shows all LEDs to a given color (range 0-255 for r, g, b). 
          * @param rgb RGB color of the LED
          */
-        //% blockId="showColor" block="%board|show color %rgb=pixel_colors" 
+        //% blockId="showColor" block="%board|show color rgb=%rgb pixel_colors" 
         //% board.defl=board
         //% parts="haloboard"
         showColor(rgb: number) {
