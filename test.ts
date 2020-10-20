@@ -1,35 +1,39 @@
 {
-   haloboard.initBoard(DigitalPin.P0, 12, haloboard.Mode.RGB)
+    let board = haloboard.create(DigitalPin.P0,12, Mode.RGB);
 
-    haloboard.showRainbow();
-    for (let i = 0; i <= haloboard.length(); i++) { 
-        haloboard.show();
+    board.showRainbow();
+    for (let i = 0; i <= board.length(); i++) { 
+        board.show();
         basic.pause(100)
     }
     
-    haloboard.showColor(haloboard.PixelColors.Red)
+    board.showColor(PixelColors.Red)
     basic.pause(2000)
-    haloboard.showColor(haloboard.PixelColors.Green)
+    board.showColor(PixelColors.Green)
     basic.pause(1000)
-    for (let i = 0; i <= haloboard.length(); i++) {
-        haloboard.setPixelColor(i, haloboard.colors(haloboard.PixelColors.Blue))
-        haloboard.show()
+    for (let i = 0; i <= board.length(); i++) {
+        board.setPixelColor(i, haloboard.colors(PixelColors.Blue))
+        board.show()
         basic.pause(100)
     }
-    for (let i = 0; i <= haloboard.length(); i++) {
-        haloboard.setPixelColor(i, haloboard.colors(haloboard.PixelColors.Green))
-        haloboard.show()
+    for (let i = 0; i <= board.length(); i++) {
+        board.setPixelColor(i, haloboard.colors(PixelColors.Green))
+        board.show()
         basic.pause(100)
     }
-      
+    let sub = board.range(10, 20)
+    sub.showColor(PixelColors.Yellow);
+    basic.pause(200);
+
+    
     let br = 100;
-    haloboard.setBrightness(100);
+    board.setBrightness(100);
     input.onButtonPressed(Button.B, () => {
         br = br + 20;
         if (br > 255) {
             br = 5;
         }
-        haloboard.setBrightness(br);
+        board.setBrightness(br);
     });
 
     let rotationMode = false;
@@ -59,7 +63,7 @@
         let x = input.acceleration(Dimension.X) >> 1
         let y = input.acceleration(Dimension.Y) >> 1
         let z = input.acceleration(Dimension.Z) >> 1
-        haloboard.show();
+        board.show();
         basic.pause(100);
     }
 }

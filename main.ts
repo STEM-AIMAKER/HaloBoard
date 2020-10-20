@@ -1,59 +1,69 @@
+/**
+ * Well known colors for a Pixel strip
+ */
+enum PixelColors {
+    //% block=red
+    Red = 0xFF0000,
+    //% block=orange
+    Orange = 0xFFA500,
+    //% block=yellow
+    Yellow = 0xFFFF00,
+    //% block=green
+    Green = 0x00FF00,
+    //% block=blue
+    Blue = 0x0000FF,
+    //% block=indigo
+    Indigo = 0x4b0082,
+    //% block=violet
+    Violet = 0x8a2be2,
+    //% block=purple
+    Purple = 0xFF00FF,
+    //% block=white
+    White = 0xFFFFFF,
+    //% block=black
+    Black = 0x000000
+}
 
-//% block="Haloboard" color=#2699BF icon="\uf110"
-namespace haloboard {    
-    export enum PixelColors {
-        //% block=red
-        Red = 0xFF0000,
-        //% block=orange
-        Orange = 0xFFA500,
-        //% block=yellow
-        Yellow = 0xFFFF00,
-        //% block=green
-        Green = 0x00FF00,
-        //% block=blue
-        Blue = 0x0000FF,
-        //% block=indigo
-        Indigo = 0x4b0082,
-        //% block=violet
-        Violet = 0x8a2be2,
-        //% block=purple
-        Purple = 0xFF00FF,
-        //% block=white
-        White = 0xFFFFFF,
-        //% block=black
-        Black = 0x000000
-    }
+/**
+ * Different modes
+ */
+enum Mode {
+    //% block="RGB (GRB format)"
+    RGB = 0,
+    //% block="RGB+W"
+    RGBW = 1,
+    //% block="RGB (RGB format)"
+    RGB_RGB = 2
+}
 
+/**
+ * Functions to operate Halo Board.
+ */
+//% weight=5 color=#2699BF icon="\uf110"
+namespace haloboard {
     /**
-     * Different modes
+     * A Halo Board
      */
-    export enum Mode {
-        //% block="RGB (GRB format)"
-        RGB = 0,
-        //% block="RGB+W"
-        RGBW = 1,
-        //% block="RGB (RGB format)"
-        RGB_RGB = 2
-    }
-
-        let buf: Buffer;
-        let pin: DigitalPin;
+    export class board {
+        buf: Buffer;
+        pin: DigitalPin;
         
-        let brightness: number;
-        let start: number; // start offset in board
-        let _length: number; // number of LEDs
-        let _mode: Mode;
+        brightness: number;
+        start: number; // start offset in board
+        _length: number; // number of LEDs
+        _mode: Mode;
 
         /**
          * Shows all LEDs to a given color (range 0-255 for r, g, b). 
          * @param rgb RGB color of the LED
          */
-        //% blockId="showColor" block="show color %rgb=pixel_colors" 
+        //% blockId="showColor" block="%board|show color %rgb=pixel_colors" 
+        //% board.defl=board
         //% parts="haloboard"
-        export function showColor(rgb: number): void {
+        showColor(rgb: number) {
             rgb = rgb >> 0;
-            setAllRGB(rgb);
-            show();
+            this.setAllRGB(rgb);
+            this.show();
         }
 
         /**
@@ -61,16 +71,17 @@ namespace haloboard {
          * @param startHue the start hue value for the rainbow, eg: 1
          * @param endHue the end hue value for the rainbow, eg: 360
          */
-        //% blockId="haloboard_showRainbow" block="show rainbow from %startHue|to %endHue" 
+        //% blockId="haloboard_showRainbow" block="%board|show rainbow from %startHue|to %endHue" 
+        //% board.defl=board
         //% parts="haloboard"
-        export function showRainbow(startHue: number = 1, endHue: number = 360): void {
-            if (_length <= 0) return;
+        showRainbow(startHue: number = 1, endHue: number = 360) {
+            if (this._length <= 0) return;
 
             startHue = startHue >> 0;
             endHue = endHue >> 0;
             const saturation = 100;
             const luminance = 50;
-            const steps = _length;
+            const steps = this._length;
             const direction = HueInterpolationDirection.Clockwise;
 
             //hue
@@ -106,18 +117,18 @@ namespace haloboard {
 
             //interpolate
             if (steps === 1) {
-                setPixelColor(0, hsl(h1 + hStep, s1 + sStep, l1 + lStep))
+                this.setPixelColor(0, hsl(h1 + hStep, s1 + sStep, l1 + lStep))
             } else {
-                setPixelColor(0, hsl(startHue, saturation, luminance));
+                this.setPixelColor(0, hsl(startHue, saturation, luminance));
                 for (let i = 1; i < steps - 1; i++) {
                     const h = Math.idiv((h1_100 + i * hStep), 100) + 360;
                     const s = Math.idiv((s1_100 + i * sStep), 100);
                     const l = Math.idiv((l1_100 + i * lStep), 100);
-                    setPixelColor(i, hsl(h, s, l));
+                    this.setPixelColor(i, hsl(h, s, l));
                 }
-                setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
+                this.setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
             }
-            show();
+            this.show();
         }
 
         
@@ -127,10 +138,11 @@ namespace haloboard {
          * @param pixeloffset position
          * @param rgb RGB color of the LED
          */
-        //% blockId="haloboard_setPixelColor" block="set pixel color at %pixeloffset|to %rgb=colors" 
-        //% parts="haloboard"
-        export function setPixelColor(pixeloffset: number, rgb: number): void {
-            setPixelRGB(pixeloffset >> 0, rgb >> 0);
+        //% blockId="haloboard_setPixelColor" block="%board|set pixel color at %pixeloffset|to %rgb=colors" 
+        //% board.defl=board
+        //% parts="haloboard" advanced=true
+        setPixelColor(pixeloffset: number, rgb: number): void {
+            this.setPixelRGB(pixeloffset >> 0, rgb >> 0);
         }
 
         
@@ -139,207 +151,241 @@ namespace haloboard {
          * @param pixeloffset position of the LED in the board
          * @param white brightness of the white LED
          */
-        //% blockId="haloboard_setPixelWhiteLED" block="set pixel white LED at %pixeloffset|to %white" 
+        //% blockId="haloboard_setPixelWhiteLED" block="%board|set pixel white LED at %pixeloffset|to %white" 
+        //% board.defl=board
         //% parts="haloboard" advanced=true
-        export function setPixelWhiteLED(pixeloffset: number, white: number): void {            
-            if (_mode === Mode.RGBW) {
-                setPixelW(pixeloffset >> 0, white >> 0);
+        setPixelWhiteLED(pixeloffset: number, white: number): void {            
+            if (this._mode === Mode.RGBW) {
+                this.setPixelW(pixeloffset >> 0, white >> 0);
             }
         }
 
         /** 
          * Send all the changes to the board.
          */
-        //% blockId="haloboard_show" block="show"
+        //% blockId="haloboard_show" block="%board|show"
+        //% board.defl=board
         //% parts="haloboard"
-        export function show(): void {
-            ws2812b.sendBuffer(buf, pin);
+        show() {
+            ws2812b.sendBuffer(this.buf, this.pin);
         }
 
         /**
          * Turn off all LEDs.
          * You need to call ``show`` to make the changes visible.
          */
-        //% blockId="haloboard_clear" block="clear"
+        //% blockId="haloboard_clear" block="%board|clear"
+        //% board.defl=board
         //% parts="haloboard"
-        export function clear(): void {
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            buf.fill(0, start * stride, _length * stride);
+         clear(): void {
+            const stride = this._mode === Mode.RGBW ? 4 : 3;
+            this.buf.fill(0, this.start * stride, this._length * stride);
         }
 
         /**
          * Gets the number of pixels declared on the board
          */
-        //% blockId="haloboard_length" block="length"
+        //% blockId="haloboard_length" block="%board|length"
+        //% board.defl=board
         //% parts="haloboard" advanced=true
-        export function length(): number {
-            return _length;
+        length() {
+            return this._length;
         }
 
         /**
          * Set the brightness of the board. This flag only applies to future operation.
          * @param brightness a measure of LED brightness in 0-255. eg: 255
          */
-        //% blockId="haloboard_setbrightness" block="set brightness %brightness"
+        //% blockId="haloboard_setbrightness" block="%board|set brightness %brightness"
+        //% board.defl=board
         //% parts="haloboard" advanced=true
-        export function setBrightness(brightnessValue: number): void {
-            brightness = brightnessValue & 0xff;
+        setBrightness(brightness: number): void {
+            this.brightness = brightness & 0xff;
         }
 
         /**
          * Apply brightness to current colors using a quadratic easing function.
          **/
-        //% blockId="haloboard_easeBrightness" block="ease brightness"
+        //% blockId="haloboard_easeBrightness" block="%board|ease brightness"
+        //% board.defl=board
         //% parts="haloboard" advanced=true
-        export function easeBrightness(): void {
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            const br = brightness;
-            const buf1 = buf;
-            const end = start + _length;
-            const mid = Math.idiv(_length, 2);
-            for (let i = start; i < end; ++i) {
-                const k = i - start;
+        easeBrightness(): void {
+            const stride = this._mode === Mode.RGBW ? 4 : 3;
+            const br = this.brightness;
+            const buf = this.buf;
+            const end = this.start + this._length;
+            const mid = Math.idiv(this._length, 2);
+            for (let i = this.start; i < end; ++i) {
+                const k = i - this.start;
                 const ledoffset = i * stride;
                 const br = k > mid
-                    ? Math.idiv(255 * (_length - 1 - k) * (_length - 1 - k), (mid * mid))
+                    ? Math.idiv(255 * (this._length - 1 - k) * (this._length - 1 - k), (mid * mid))
                     : Math.idiv(255 * k * k, (mid * mid));
-                const r = (buf1[ledoffset + 0] * br) >> 8; buf1[ledoffset + 0] = r;
-                const g = (buf1[ledoffset + 1] * br) >> 8; buf1[ledoffset + 1] = g;
-                const b = (buf1[ledoffset + 2] * br) >> 8; buf1[ledoffset + 2] = b;
+                const r = (buf[ledoffset + 0] * br) >> 8; buf[ledoffset + 0] = r;
+                const g = (buf[ledoffset + 1] * br) >> 8; buf[ledoffset + 1] = g;
+                const b = (buf[ledoffset + 2] * br) >> 8; buf[ledoffset + 2] = b;
                 if (stride == 4) {
-                    const w = (buf1[ledoffset + 3] * br) >> 8; buf1[ledoffset + 3] = w;
+                    const w = (buf[ledoffset + 3] * br) >> 8; buf[ledoffset + 3] = w;
                 }
             }
+        }
+
+        /** 
+         * Create a range of LEDs.
+         * @param start offset in the LED board to start the range
+         * @param length number of LEDs in the range. eg: 4
+         */
+        //% weight=89
+        //% blockId="haloboard_range" block="%board|range from %start|with %length|leds"
+        //% blockSetVariable=range
+        //% board.defl=board
+        //% parts="haloboard"
+        range(start: number, length: number): board {
+            start = start >> 0;
+            length = length >> 0;
+            let myboard = new board();
+            myboard.buf = this.buf;
+            myboard.pin = this.pin;
+            myboard.brightness = this.brightness;
+            myboard.start = this.start + Math.clamp(0, this._length - 1, start);
+            myboard._length = Math.clamp(0, this._length - (myboard.start - this.start), length);
+            myboard._mode = this._mode;
+            return myboard;
         }
 
         /**
          * Set the pin where the haloboard is connected, defaults to P0.
          */
-        //% blockId="haloboard_setPin" block="set pin=%pinValue where the haloboard is connected"
+        //% blockId="haloboard_setPin" block="%board| set pin=%pin where the haloboard is connected"
         //% weight=10
         //% parts="haloboard" advanced=true
-        export function setPin(pinValue: DigitalPin): void {
-            pin = pinValue;
-            pins.digitalWritePin(pin, 0);
+        setPin(pin: DigitalPin): void {
+            this.pin = pin;
+            pins.digitalWritePin(this.pin, 0);
             // don't yield to avoid races on initialization
         }
 
         /**
          * Estimates the electrical current (mA) consumed by the current light configuration.
          */
-        //% weight=9 blockId=haloboard_power block="power (mA)"
+        //% weight=9 blockId=haloboard_power block="%board|power (mA)"
+        //% board.defl=board
         //% parts="haloboard" advanced=true
-        export function power(): number {
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            const end = start + _length;
+        power(): number {
+            const stride = this._mode === Mode.RGBW ? 4 : 3;
+            const end = this.start + this._length;
             let p = 0;
-            for (let i = start; i < end; ++i) {
+            for (let i = this.start; i < end; ++i) {
                 const ledoffset = i * stride;
                 for (let j = 0; j < stride; ++j) {
-                    p += buf[i + j];
+                    p += this.buf[i + j];
                 }
             }
-            return Math.idiv(length(), 2) /* 0.5mA per neopixel */
+            return Math.idiv(this.length(), 2) /* 0.5mA per neopixel */
                 + Math.idiv(p * 433, 10000); /* rought approximation */
         }
 
-        function setBufferRGB(offset: number, red: number, green: number, blue: number): void {
-            if (_mode === Mode.RGB_RGB) {
-                buf[offset + 0] = red;
-                buf[offset + 1] = green;
+        private setBufferRGB(offset: number, red: number, green: number, blue: number): void {
+            if (this._mode === Mode.RGB_RGB) {
+                this.buf[offset + 0] = red;
+                this.buf[offset + 1] = green;
             } else {
-                buf[offset + 0] = green;
-                buf[offset + 1] = red;
+                this.buf[offset + 0] = green;
+                this.buf[offset + 1] = red;
             }
-            buf[offset + 2] = blue;
+            this.buf[offset + 2] = blue;
         }
 
-        function  setAllRGB(rgb: number) {
+        private setAllRGB(rgb: number) {
             let red = unpackR(rgb);
             let green = unpackG(rgb);
             let blue = unpackB(rgb);
 
-            const br = brightness;
+            const br = this.brightness;
             if (br < 255) {
                 red = (red * br) >> 8;
                 green = (green * br) >> 8;
                 blue = (blue * br) >> 8;
             }
-            const end = start + _length;
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            for (let i = start; i < end; ++i) {
-                setBufferRGB(i * stride, red, green, blue)
+            const end = this.start + this._length;
+            const stride = this._mode === Mode.RGBW ? 4 : 3;
+            for (let i = this.start; i < end; ++i) {
+                this.setBufferRGB(i * stride, red, green, blue)
             }
         }
-        function setAllW(white: number) {
-            if (_mode !== Mode.RGBW)
+        private setAllW(white: number) {
+            if (this._mode !== Mode.RGBW)
                 return;
 
-            let br = brightness;
+            let br = this.brightness;
             if (br < 255) {
                 white = (white * br) >> 8;
             }
-            let buf1 = buf;
-            let end = start + _length;
-            for (let i = start; i < end; ++i) {
+            let buf = this.buf;
+            let end = this.start + this._length;
+            for (let i = this.start; i < end; ++i) {
                 let ledoffset = i * 4;
-                buf1[ledoffset + 3] = white;
+                buf[ledoffset + 3] = white;
             }
         }
-        function  setPixelRGB(pixeloffset: number, rgb: number): void {
+        private setPixelRGB(pixeloffset: number, rgb: number): void {
             if (pixeloffset < 0
-                || pixeloffset >= _length)
+                || pixeloffset >= this._length)
                 return;
 
-            let stride = _mode === Mode.RGBW ? 4 : 3;
-            pixeloffset = (pixeloffset + start) * stride;
+            let stride = this._mode === Mode.RGBW ? 4 : 3;
+            pixeloffset = (pixeloffset + this.start) * stride;
 
             let red = unpackR(rgb);
             let green = unpackG(rgb);
             let blue = unpackB(rgb);
 
-            let br = brightness;
+            let br = this.brightness;
             if (br < 255) {
                 red = (red * br) >> 8;
                 green = (green * br) >> 8;
                 blue = (blue * br) >> 8;
             }
-            setBufferRGB(pixeloffset, red, green, blue)
+            this.setBufferRGB(pixeloffset, red, green, blue)
         }
-        function setPixelW(pixeloffset: number, white: number): void {
-            if (_mode !== Mode.RGBW)
+        private setPixelW(pixeloffset: number, white: number): void {
+            if (this._mode !== Mode.RGBW)
                 return;
 
             if (pixeloffset < 0
-                || pixeloffset >= _length)
+                || pixeloffset >= this._length)
                 return;
 
-            pixeloffset = (pixeloffset + start) * 4;
+            pixeloffset = (pixeloffset + this.start) * 4;
 
-            let br = brightness;
+            let br = this.brightness;
             if (br < 255) {
                 white = (white * br) >> 8;
             }
-            let buf1 = buf;
-            buf1[pixeloffset + 3] = white;
+            let buf = this.buf;
+            buf[pixeloffset + 3] = white;
         }
-    
+    }
+
     /**
      * Create a new NeoPixel driver for `numleds` LEDs.
      * @param pin the pin where the neopixel is connected.
      * @param numleds number of leds in the board, eg: 10,12
      */
-    //% blockId="initBoard" block="Init haloboard at pin %pin|with %numleds|leds as %mode"
+    //% blockId="create" block="haloboard at pin %pin|with %numleds|leds as %mode"
     //% trackArgs=0,2
+    //% blockSetVariable=board
     //% parts="haloboard"
-    export function initBoard(pin: DigitalPin, numleds: number, mode: Mode): void {
+    export function create(pin: DigitalPin, numleds: number, mode: Mode): board {
+        let myboard = new board();
         let stride = mode === Mode.RGBW ? 4 : 3;
-        buf = pins.createBuffer(numleds * stride);
-        start = 0;
-        _length = numleds;
-        _mode = mode;
-        setBrightness(128)
-        setPin(pin)
+        myboard.buf = pins.createBuffer(numleds * stride);
+        myboard.start = 0;
+        myboard._length = numleds;
+        myboard._mode = mode;
+        myboard.setBrightness(128)
+        myboard.setPin(pin)
+        return myboard;
     }
 
     /**
