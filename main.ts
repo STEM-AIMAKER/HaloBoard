@@ -140,7 +140,7 @@ namespace haloboard {
          */
         //% blockId="haloboard_setPixelColor" block="%board|set pixel color at %pixeloffset|to %rgb=colors" 
         //% board.defl=board
-        //% parts="haloboard" advanced=true
+        //% parts="haloboard"
         setPixelColor(pixeloffset: number, rgb: number): void {
             this.setPixelRGB(pixeloffset >> 0, rgb >> 0);
         }
