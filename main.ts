@@ -49,7 +49,6 @@ namespace haloboard {
          * @param rgb RGB color of the LED
          */
         //% blockId="showColor" block="show color %rgb=pixel_colors" 
-        //% board.defl=board
         //% parts="haloboard"
         export function showColor(rgb: number): void {
             rgb = rgb >> 0;
