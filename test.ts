@@ -1,5 +1,5 @@
 {
-   haloboard.initBoard(DigitalPin.P0, 12, Mode.RGB)
+   haloboard.initBoard(DigitalPin.P0, 12, haloboard.Mode.RGB)
 
     haloboard.showRainbow();
     for (let i = 0; i <= haloboard.length(); i++) { 
@@ -7,17 +7,17 @@
         basic.pause(100)
     }
     
-    haloboard.showColor(PixelColors.Red)
+    haloboard.showColor(haloboard.PixelColors.Red)
     basic.pause(2000)
-    haloboard.showColor(PixelColors.Green)
+    haloboard.showColor(haloboard.PixelColors.Green)
     basic.pause(1000)
     for (let i = 0; i <= haloboard.length(); i++) {
-        haloboard.setPixelColor(i, haloboard.colors(PixelColors.Blue))
+        haloboard.setPixelColor(i, haloboard.colors(haloboard.PixelColors.Blue))
         haloboard.show()
         basic.pause(100)
     }
     for (let i = 0; i <= haloboard.length(); i++) {
-        haloboard.setPixelColor(i, haloboard.colors(PixelColors.Green))
+        haloboard.setPixelColor(i, haloboard.colors(haloboard.PixelColors.Green))
         haloboard.show()
         basic.pause(100)
     }

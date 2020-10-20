@@ -1,7 +1,7 @@
 {
-    "name": "Halo Board",
+    "name": "Haloboard",
     "version": "1.0.0",
-    "description": "Hanshin Halo board driver base on neopixel",
+    "description": "Hanshin Haloboard driver base on neopixel",
     "license": "MIT",
     "dependencies": {
         "core": "*",
