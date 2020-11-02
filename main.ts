@@ -373,7 +373,6 @@ namespace haloboard {
      * @param numleds number of leds in the board, eg: 10,12
      */
     //% blockId="create" block="haloboard at pin %pin|with %numleds|leds as %mode"
-    //% trackArgs=0,2
     //% blockSetVariable=board
     //% parts="haloboard"
     export function create(pin: DigitalPin, numleds: number, mode: Mode): board {
