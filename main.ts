@@ -140,8 +140,11 @@ namespace haloboard {
          */
         //% blockId="haloboard_setPixelColor" block="%board|set pixel color at %pixeloffset|to %rgb=colors" 
         //% board.defl=board
+        //% pixeloffset.min=1
         //% parts="haloboard"
         setPixelColor(pixeloffset: number, rgb: number): void {
+            if( pixeloffset > 0 )
+                pixeloffset -= 1
             this.setPixelRGB(pixeloffset >> 0, rgb >> 0);
         }
 
@@ -198,6 +201,7 @@ namespace haloboard {
          */
         //% blockId="haloboard_setbrightness" block="%board|set brightness %brightness"
         //% board.defl=board
+        //% brightness.defl=255 brightness.min=0 brightness.max=255
         //% parts="haloboard" advanced=true
         setBrightness(brightness: number): void {
             this.brightness = brightness & 0xff;
@@ -238,9 +242,12 @@ namespace haloboard {
         //% weight=89
         //% blockId="haloboard_range" block="%board|range from %start|with %length|leds"
         //% blockSetVariable=range
+        //% start.defl=1 start.min=1
         //% board.defl=board
         //% parts="haloboard"
         range(start: number, length: number): board {
+            if( start > 0 )
+                start -= 1
             start = start >> 0;
             length = length >> 0;
             let myboard = new board();
