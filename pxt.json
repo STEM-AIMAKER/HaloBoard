@@ -1,7 +1,7 @@
 {
-    "name": "Halo Board",
+    "name": "RGB LED Ring",
     "version": "1.0.1",
-    "description": "Hanshin Halo board driver base on neopixel",
+    "description": "AIMaker RGB LED Ring driver base on neopixel",
     "license": "MIT",
     "dependencies": {
         "core": "*",
