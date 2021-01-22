@@ -65,6 +65,14 @@ namespace haloboard {
         }
 
         /**
+        * Gets the RGB value of a known color
+        */
+        //% blockId="colors" block="%color"
+        export function colors(color: PixelColors): number {
+            return color;
+        }
+
+        /**
          * Shows all LEDs to a given color (range 0-255 for r, g, b). 
          * @param rgb RGB color of the LED
          */
@@ -75,94 +83,8 @@ namespace haloboard {
             show();
         }
 
-        /**
-        * Gets the RGB value of a known color
-        */
-        //% blockId="colors" block="%color"
-        export function colors(color: PixelColors): number {
-            return color;
-        }
-
-        /**
-         * Set LED to a given color (range 0-255 for r, g, b). 
-         * You need to call ``show`` to make the changes visible.
-         * @param pixeloffset position
-         * @param rgb RGB color of the LED
-         */
-        //% blockId="setPixelColor" block="Set pixel color at %pixeloffset|to %rgb=colors" 
-          //% pixeloffset.min=1
-          export function setPixelColor(pixeloffset: number, rgb: number): void {
-            if( pixeloffset > 0 )
-                pixeloffset -= 1
-            setPixelRGB(pixeloffset >> 0, rgb >> 0);
-        }
-        /**
-         * Shows a rainbow pattern on all LEDs. 
-         * @param startHue the start hue value for the rainbow, eg: 1
-         * @param endHue the end hue value for the rainbow, eg: 360
-         */
-        //% blockId="showRainbow" block="Show rainbow from %startHue|to %endHue" 
-        export function showRainbow(startHue: number = 1, endHue: number = 360) {
-            if (_length <= 0) return;
-
-            startHue = startHue >> 0;
-            endHue = endHue >> 0;
-            const saturation = 100;
-            const luminance = 50;
-            const steps = _length;
-            const direction = HueInterpolationDirection.Clockwise;
-
-            //hue
-            const h1 = startHue;
-            const h2 = endHue;
-            const hDistCW = ((h2 + 360) - h1) % 360;
-            const hStepCW = Math.idiv((hDistCW * 100), steps);
-            const hDistCCW = ((h1 + 360) - h2) % 360;
-            const hStepCCW = Math.idiv(-(hDistCCW * 100), steps);
-            let hStep: number;
-            if (direction === HueInterpolationDirection.Clockwise) {
-                hStep = hStepCW;
-            } else if (direction === HueInterpolationDirection.CounterClockwise) {
-                hStep = hStepCCW;
-            } else {
-                hStep = hDistCW < hDistCCW ? hStepCW : hStepCCW;
-            }
-            const h1_100 = h1 * 100; //we multiply by 100 so we keep more accurate results while doing interpolation
-
-            //sat
-            const s1 = saturation;
-            const s2 = saturation;
-            const sDist = s2 - s1;
-            const sStep = Math.idiv(sDist, steps);
-            const s1_100 = s1 * 100;
-
-            //lum
-            const l1 = luminance;
-            const l2 = luminance;
-            const lDist = l2 - l1;
-            const lStep = Math.idiv(lDist, steps);
-            const l1_100 = l1 * 100
-
-            //interpolate
-            if (steps === 1) {
-                setPixelColor(0, hsl(h1 + hStep, s1 + sStep, l1 + lStep))
-            } else {
-                setPixelColor(0, hsl(startHue, saturation, luminance));
-                for (let i = 1; i < steps - 1; i++) {
-                    const h = Math.idiv((h1_100 + i * hStep), 100) + 360;
-                    const s = Math.idiv((s1_100 + i * sStep), 100);
-                    const l = Math.idiv((l1_100 + i * lStep), 100);
-                    setPixelColor(i, hsl(h, s, l));
-                }
-                setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
-            }
-            show();
-        }
-
-        
-
-
-        
+       
+         
         /**
          * For NeoPixels with RGB+W LEDs, set the white LED brightness. This only works for RGB+W NeoPixels.
          * @param pixeloffset position of the LED in the board
@@ -176,24 +98,7 @@ namespace haloboard {
             }
         }
 
-        /** 
-         * Send all the changes to the board.
-         */
-        //% blockId="show" block="Show"
-        export function show() {
-            ws2812b.sendBuffer(_buf, _pin);
-        }
 
-        /**
-         * Turn off all LEDs.
-         * You need to call ``show`` to make the changes visible.
-         */
-        //% blockId="clear" block="clear"
-        export function clear(): void {
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            _buf.fill(0, _start * stride, _length * stride);
-            show()
-        }
 
         /**
          * Gets the number of pixels declared on the board
@@ -337,6 +242,102 @@ namespace haloboard {
             }
             let buf = _buf;
             buf[pixeloffset + 3] = white;
+        }
+    
+        /**
+         * Turn off all LEDs.
+         * You need to call ``show`` to make the changes visible.
+         */
+        //% blockId="clear" block="clear"
+        export function clear(): void {
+            const stride = _mode === Mode.RGBW ? 4 : 3;
+            _buf.fill(0, _start * stride, _length * stride);
+            show()
+        }
+
+        /** 
+         * Send all the changes to the board.
+         */
+        //% blockId="show" block="Show"
+        export function show() {
+            ws2812b.sendBuffer(_buf, _pin);
+        }
+
+       /**
+         * Set LED to a given color (range 0-255 for r, g, b). 
+         * You need to call ``show`` to make the changes visible.
+         * @param pixeloffset position
+         * @param rgb RGB color of the LED
+         */
+        //% blockId="setPixelColor" block="Set pixel color at %pixeloffset|to %rgb=colors" 
+          //% pixeloffset.min=1
+          export function setPixelColor(pixeloffset: number, rgb: number): void {
+            if( pixeloffset > 0 )
+                pixeloffset -= 1
+            setPixelRGB(pixeloffset >> 0, rgb >> 0);
+        }
+       
+         /**
+         * Shows a rainbow pattern on all LEDs. 
+         * @param startHue the start hue value for the rainbow, eg: 1
+         * @param endHue the end hue value for the rainbow, eg: 360
+         */
+        //% blockId="showRainbow" block="Show rainbow from %startHue|to %endHue" 
+        export function showRainbow(startHue: number = 1, endHue: number = 360) {
+            if (_length <= 0) return;
+
+            startHue = startHue >> 0;
+            endHue = endHue >> 0;
+            const saturation = 100;
+            const luminance = 50;
+            const steps = _length;
+            const direction = HueInterpolationDirection.Clockwise;
+
+            //hue
+            const h1 = startHue;
+            const h2 = endHue;
+            const hDistCW = ((h2 + 360) - h1) % 360;
+            const hStepCW = Math.idiv((hDistCW * 100), steps);
+            const hDistCCW = ((h1 + 360) - h2) % 360;
+            const hStepCCW = Math.idiv(-(hDistCCW * 100), steps);
+            let hStep: number;
+            if (direction === HueInterpolationDirection.Clockwise) {
+                hStep = hStepCW;
+            } else if (direction === HueInterpolationDirection.CounterClockwise) {
+                hStep = hStepCCW;
+            } else {
+                hStep = hDistCW < hDistCCW ? hStepCW : hStepCCW;
+            }
+            const h1_100 = h1 * 100; //we multiply by 100 so we keep more accurate results while doing interpolation
+
+            //sat
+            const s1 = saturation;
+            const s2 = saturation;
+            const sDist = s2 - s1;
+            const sStep = Math.idiv(sDist, steps);
+            const s1_100 = s1 * 100;
+
+            //lum
+            const l1 = luminance;
+            const l2 = luminance;
+            const lDist = l2 - l1;
+            const lStep = Math.idiv(lDist, steps);
+            const l1_100 = l1 * 100
+
+            //interpolate
+            if (steps === 1) {
+                setPixelColor(0, hsl(h1 + hStep, s1 + sStep, l1 + lStep))
+            } else {
+                setPixelColor(0, hsl(startHue, saturation, luminance));
+                for (let i = 1; i < steps - 1; i++) {
+                    const h = Math.idiv((h1_100 + i * hStep), 100) + 360;
+                    const s = Math.idiv((s1_100 + i * sStep), 100);
+                    const l = Math.idiv((l1_100 + i * lStep), 100);
+                    setPixelColor(i, hsl(h, s, l));
+                }
+                setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
+            }
+            show();
         }
     /**
      * Create a new NeoPixel driver for `numleds` LEDs.
