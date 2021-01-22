@@ -48,62 +48,33 @@ namespace rgbledring {
         let _length: number; // number of LEDs
         let _mode: Mode;
 
-        /**
-         * Converts red, green, blue channels into a RGB color
-         * @param red value of the red channel between 0 and 255. eg: 255
-         * @param green value of the green channel between 0 and 255. eg: 255
-         * @param blue value of the blue channel between 0 and 255. eg: 255
-         */
         //% blockId="rgb" block="red %red|green %green|blue %blue"
         export function rgb(red: number, green: number, blue: number): number {
             return packRGB(red, green, blue);
         }
 
-        /**
-        * Gets the RGB value of a known color
-        */
-        //% blockId="colors" block="%color"
-        export function colors(color: PixelColors): number {
+        //% blockId="inColors" block="%color"
+        export function inColors(color: PixelColors): number {
             return color;
         }
 
-        /**
-         * Shows all LEDs to a given color (range 0-255 for r, g, b). 
-         * @param rgb RGB color of the LED
-         */
-        //% blockId="showColor" block="Show color rgb=%rgb pixel_colors" 
-        export function showColor(rgb: number) {
-            rgb = rgb >> 0;
-            setAllRGB(rgb);
+        //% blockId="showColor" block="Show color rgb=%rgbValue pixel_colors" 
+        export function showColor(rgbValue: number) {
+            rgbValue = rgbValue >> 0;
+            setAllRGB(rgbValue);
             show();
         }
 
-       
-         
-        /**
-         * For NeoPixels with RGB+W LEDs, set the white LED brightness. This only works for RGB+W NeoPixels.
-         * @param pixeloffset position of the LED in the board
-         * @param white brightness of the white LED
-         */
-         function setPixelWhiteLED(pixeloffset: number, white: number): void {            
+        function setPixelWhiteLED(pixeloffset: number, white: number): void {            
             if (_mode === Mode.RGBW) {
                 setPixelW(pixeloffset >> 0, white >> 0);
             }
         }
 
-
-
-        /**
-         * Gets the number of pixels declared on the board
-         */
         function length() {
             return _length;
         }
 
-        /**
-         * Set the brightness of the board. This flag only applies to future operation.
-         * @param brightness a measure of LED brightness in 0-255. eg: 255
-         */
         //% blockId="setbrightness" block="Set brightness %brightness"
         //% brightness.defl=255 brightness.min=0 brightness.max=255
         //% advanced=true
@@ -111,10 +82,96 @@ namespace rgbledring {
             _brightness = brightness & 0xff;
         }
 
-        /**
-         * Apply brightness to current colors using a quadratic easing function.
-         **/
-         function easeBrightness(): void {
+        //% blockId="clear" block="clear"
+        export function clear(): void {
+            const stride = _mode === Mode.RGBW ? 4 : 3;
+            _buf.fill(0, _start * stride, _length * stride);
+            show()
+        }
+
+        //% blockId="show" block="Show"
+        export function show() {
+            ws2812b.sendBuffer(_buf, _pin);
+        }
+
+        //% blockId="setPixelColor" block="Set pixel color at %pixeloffset|to %rgb=colors" 
+        //% pixeloffset.min=1
+        export function setPixelColor(pixeloffset: number, rgb: number): void {
+            if( pixeloffset > 0 )
+                pixeloffset -= 1
+            setPixelRGB(pixeloffset >> 0, rgb >> 0);
+        }
+       
+        //% blockId="showRainbow" block="Show rainbow from %startHue|to %endHue" 
+        export function showRainbow(startHue: number = 1, endHue: number = 360) {
+            if (_length <= 0) return;
+
+            startHue = startHue >> 0;
+            endHue = endHue >> 0;
+            const saturation = 100;
+            const luminance = 50;
+            const steps = _length;
+            const direction = HueInterpolationDirection.Clockwise;
+
+            //hue
+            const h1 = startHue;
+            const h2 = endHue;
+            const hDistCW = ((h2 + 360) - h1) % 360;
+            const hStepCW = Math.idiv((hDistCW * 100), steps);
+            const hDistCCW = ((h1 + 360) - h2) % 360;
+            const hStepCCW = Math.idiv(-(hDistCCW * 100), steps);
+            let hStep: number;
+            if (direction === HueInterpolationDirection.Clockwise) {
+                hStep = hStepCW;
+            } else if (direction === HueInterpolationDirection.CounterClockwise) {
+                hStep = hStepCCW;
+            } else {
+                hStep = hDistCW < hDistCCW ? hStepCW : hStepCCW;
+            }
+            const h1_100 = h1 * 100; //we multiply by 100 so we keep more accurate results while doing interpolation
+
+            //sat
+            const s1 = saturation;
+            const s2 = saturation;
+            const sDist = s2 - s1;
+            const sStep = Math.idiv(sDist, steps);
+            const s1_100 = s1 * 100;
+
+            //lum
+            const l1 = luminance;
+            const l2 = luminance;
+            const lDist = l2 - l1;
+            const lStep = Math.idiv(lDist, steps);
+            const l1_100 = l1 * 100
+
+            //interpolate
+            if (steps === 1) {
+                setPixelColor(0, hsl(h1 + hStep, s1 + sStep, l1 + lStep))
+            } else {
+                setPixelColor(0, hsl(startHue, saturation, luminance));
+                for (let i = 1; i < steps - 1; i++) {
+                    const h = Math.idiv((h1_100 + i * hStep), 100) + 360;
+                    const s = Math.idiv((s1_100 + i * sStep), 100);
+                    const l = Math.idiv((l1_100 + i * lStep), 100);
+                    setPixelColor(i, hsl(h, s, l));
+                }
+                setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
+            }
+            show();
+        }
+    
+        //% blockId="initLEDRing" block="Set RGB LED Ring at pin %pin|with %numleds|leds as %mode"
+        export function initLEDRing(pin: DigitalPin, numleds: number, mode: Mode) {
+            _pin = pin
+            _start = 0
+            _length = numleds
+            let stride = mode === Mode.RGBW ? 4 : 3;
+            _mode = mode
+            _brightness = 128
+            _buf = pins.createBuffer(numleds * stride);
+        }
+
+        function easeBrightness(): void {
             const stride = _mode === Mode.RGBW ? 4 : 3;
             const br = _brightness;
             const buf = _buf;
@@ -236,116 +293,6 @@ namespace rgbledring {
             buf[pixeloffset + 3] = white;
         }
     
-        /**
-         * Turn off all LEDs.
-         * You need to call ``show`` to make the changes visible.
-         */
-        //% blockId="clear" block="clear"
-        export function clear(): void {
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            _buf.fill(0, _start * stride, _length * stride);
-            show()
-        }
-
-        /** 
-         * Send all the changes to the board.
-         */
-        //% blockId="show" block="Show"
-        export function show() {
-            ws2812b.sendBuffer(_buf, _pin);
-        }
-
-       /**
-         * Set LED to a given color (range 0-255 for r, g, b). 
-         * You need to call ``show`` to make the changes visible.
-         * @param pixeloffset position
-         * @param rgb RGB color of the LED
-         */
-        //% blockId="setPixelColor" block="Set pixel color at %pixeloffset|to %rgb=colors" 
-        //% pixeloffset.min=1
-        export function setPixelColor(pixeloffset: number, rgb: number): void {
-            if( pixeloffset > 0 )
-                pixeloffset -= 1
-            setPixelRGB(pixeloffset >> 0, rgb >> 0);
-        }
-       
-         /**
-         * Shows a rainbow pattern on all LEDs. 
-         * @param startHue the start hue value for the rainbow, eg: 1
-         * @param endHue the end hue value for the rainbow, eg: 360
-         */
-        //% blockId="showRainbow" block="Show rainbow from %startHue|to %endHue" 
-        export function showRainbow(startHue: number = 1, endHue: number = 360) {
-            if (_length <= 0) return;
-
-            startHue = startHue >> 0;
-            endHue = endHue >> 0;
-            const saturation = 100;
-            const luminance = 50;
-            const steps = _length;
-            const direction = HueInterpolationDirection.Clockwise;
-
-            //hue
-            const h1 = startHue;
-            const h2 = endHue;
-            const hDistCW = ((h2 + 360) - h1) % 360;
-            const hStepCW = Math.idiv((hDistCW * 100), steps);
-            const hDistCCW = ((h1 + 360) - h2) % 360;
-            const hStepCCW = Math.idiv(-(hDistCCW * 100), steps);
-            let hStep: number;
-            if (direction === HueInterpolationDirection.Clockwise) {
-                hStep = hStepCW;
-            } else if (direction === HueInterpolationDirection.CounterClockwise) {
-                hStep = hStepCCW;
-            } else {
-                hStep = hDistCW < hDistCCW ? hStepCW : hStepCCW;
-            }
-            const h1_100 = h1 * 100; //we multiply by 100 so we keep more accurate results while doing interpolation
-
-            //sat
-            const s1 = saturation;
-            const s2 = saturation;
-            const sDist = s2 - s1;
-            const sStep = Math.idiv(sDist, steps);
-            const s1_100 = s1 * 100;
-
-            //lum
-            const l1 = luminance;
-            const l2 = luminance;
-            const lDist = l2 - l1;
-            const lStep = Math.idiv(lDist, steps);
-            const l1_100 = l1 * 100
-
-            //interpolate
-            if (steps === 1) {
-                setPixelColor(0, hsl(h1 + hStep, s1 + sStep, l1 + lStep))
-            } else {
-                setPixelColor(0, hsl(startHue, saturation, luminance));
-                for (let i = 1; i < steps - 1; i++) {
-                    const h = Math.idiv((h1_100 + i * hStep), 100) + 360;
-                    const s = Math.idiv((s1_100 + i * sStep), 100);
-                    const l = Math.idiv((l1_100 + i * lStep), 100);
-                    setPixelColor(i, hsl(h, s, l));
-                }
-                setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
-            }
-            show();
-        }
-    /**
-     * Create a new NeoPixel driver for `numleds` LEDs.
-     * @param pin the pin where the neopixel is connected.
-     * @param numleds number of leds in the board, eg: 10,12
-     */
-    //% blockId="init" block="Set RGB LED Ring at pin %pin|with %numleds|leds as %mode"
-    export function init(pin: DigitalPin, numleds: number, mode: Mode) {
-        _pin = pin
-        _start = 0
-        _length = numleds
-        let stride = mode === Mode.RGBW ? 4 : 3;
-        _mode = mode
-        _brightness = 128
-        _buf = pins.createBuffer(numleds * stride);
-    }
 
     function packRGB(a: number, b: number, c: number): number {
         return ((a & 0xFF) << 16) | ((b & 0xFF) << 8) | (c & 0xFF);
@@ -363,12 +310,6 @@ namespace rgbledring {
         return b;
     }
 
-    /**
-     * Converts a hue saturation luminosity value into a RGB color
-     * @param h hue from 0 to 360
-     * @param s saturation from 0 to 99
-     * @param l luminosity from 0 to 99
-     */
     function hsl(h: number, s: number, l: number): number {
         h = Math.round(h);
         s = Math.round(s);
