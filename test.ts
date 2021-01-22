@@ -1,5 +1,5 @@
 {
-    rgbledring.init(DigitalPin.P0,12, Mode.RGB);
+    rgbledring.init(DigitalPin.P0,12, rgbledring.Mode.RGB);
 
     rgbledring.showRainbow();
     for (let i = 0; i <= 12; i++) { 
@@ -7,17 +7,17 @@
         basic.pause(100)
     }
     
-    rgbledring.showColor(PixelColors.Red)
+    rgbledring.showColor(rgbledring.PixelColors.Red)
     basic.pause(2000)
-    rgbledring.showColor(PixelColors.Green)
+    rgbledring.showColor(rgbledring.PixelColors.Green)
     basic.pause(1000)
     for (let i = 0; i <= 12; i++) {
-        rgbledring.setPixelColor(i, rgbledring.colors(PixelColors.Blue))
+        rgbledring.setPixelColor(i, rgbledring.colors(rgbledring.PixelColors.Blue))
         rgbledring.show()
         basic.pause(100)
     }
     for (let i = 0; i <= 12; i++) {
-        rgbledring.setPixelColor(i, rgbledring.colors(PixelColors.Green))
+        rgbledring.setPixelColor(i, rgbledring.colors(rgbledring.PixelColors.Green))
         rgbledring.show()
         basic.pause(100)
     }

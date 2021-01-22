@@ -1,46 +1,45 @@
-/**
- * Well known colors for a Pixel strip
- */
-enum PixelColors {
-    //% block=red
-    Red = 0xFF0000,
-    //% block=orange
-    Orange = 0xFFA500,
-    //% block=yellow
-    Yellow = 0xFFFF00,
-    //% block=green
-    Green = 0x00FF00,
-    //% block=blue
-    Blue = 0x0000FF,
-    //% block=indigo
-    Indigo = 0x4b0082,
-    //% block=violet
-    Violet = 0x8a2be2,
-    //% block=purple
-    Purple = 0xFF00FF,
-    //% block=white
-    White = 0xFFFFFF,
-    //% block=black
-    Black = 0x000000
-}
 
-/**
- * Different modes
- */
-enum Mode {
-    //% block="RGB (GRB format)"
-    RGB = 0,
-    //% block="RGB+W"
-    RGBW = 1,
-    //% block="RGB (RGB format)"
-    RGB_RGB = 2
-}
-
-/**
- * Functions to operate Halo Board.
- */
 //% weight=5 color=#2699BF icon="\uf110" block="AIMaker: RGB LED Ring"
 namespace rgbledring {
+        /**
+     * Well known colors for a Pixel strip
+     */
+    export enum PixelColors {
+        //% block=red
+        Red = 0xFF0000,
+        //% block=orange
+        Orange = 0xFFA500,
+        //% block=yellow
+        Yellow = 0xFFFF00,
+        //% block=green
+        Green = 0x00FF00,
+        //% block=blue
+        Blue = 0x0000FF,
+        //% block=indigo
+        Indigo = 0x4b0082,
+        //% block=violet
+        Violet = 0x8a2be2,
+        //% block=purple
+        Purple = 0xFF00FF,
+        //% block=white
+        White = 0xFFFFFF,
+        //% block=black
+        Black = 0x000000
+    }
+
+    /**
+     * Different modes
+     */
+    export enum Mode {
+        //% block="RGB (GRB format)"
+        RGB = 0,
+        //% block="RGB+W"
+        RGBW = 1,
+        //% block="RGB (RGB format)"
+        RGB_RGB = 2
+    }
+
+
         let _buf: Buffer;
         let _pin: DigitalPin;
         
@@ -86,8 +85,6 @@ namespace rgbledring {
          * @param pixeloffset position of the LED in the board
          * @param white brightness of the white LED
          */
-        //% blockId="setPixelWhiteLED" block="Set pixel white LED at %pixeloffset|to %white" 
-        //% advanced=true
          function setPixelWhiteLED(pixeloffset: number, white: number): void {            
             if (_mode === Mode.RGBW) {
                 setPixelW(pixeloffset >> 0, white >> 0);
@@ -117,7 +114,6 @@ namespace rgbledring {
         /**
          * Apply brightness to current colors using a quadratic easing function.
          **/
-        //% blockId="easeBrightness" block="Ease brightness"
          function easeBrightness(): void {
             const stride = _mode === Mode.RGBW ? 4 : 3;
             const br = _brightness;
@@ -266,8 +262,8 @@ namespace rgbledring {
          * @param rgb RGB color of the LED
          */
         //% blockId="setPixelColor" block="Set pixel color at %pixeloffset|to %rgb=colors" 
-          //% pixeloffset.min=1
-          export function setPixelColor(pixeloffset: number, rgb: number): void {
+        //% pixeloffset.min=1
+        export function setPixelColor(pixeloffset: number, rgb: number): void {
             if( pixeloffset > 0 )
                 pixeloffset -= 1
             setPixelRGB(pixeloffset >> 0, rgb >> 0);
