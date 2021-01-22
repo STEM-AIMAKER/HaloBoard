@@ -1,35 +1,35 @@
 {
-    haloboard.init(DigitalPin.P0,12, Mode.RGB);
+    rgbledring.init(DigitalPin.P0,12, Mode.RGB);
 
-    haloboard.showRainbow();
+    rgbledring.showRainbow();
     for (let i = 0; i <= 12; i++) { 
-        haloboard.show();
+        rgbledring.show();
         basic.pause(100)
     }
     
-    haloboard.showColor(PixelColors.Red)
+    rgbledring.showColor(PixelColors.Red)
     basic.pause(2000)
-    haloboard.showColor(PixelColors.Green)
+    rgbledring.showColor(PixelColors.Green)
     basic.pause(1000)
     for (let i = 0; i <= 12; i++) {
-        haloboard.setPixelColor(i, haloboard.colors(PixelColors.Blue))
-        haloboard.show()
+        rgbledring.setPixelColor(i, rgbledring.colors(PixelColors.Blue))
+        rgbledring.show()
         basic.pause(100)
     }
     for (let i = 0; i <= 12; i++) {
-        haloboard.setPixelColor(i, haloboard.colors(PixelColors.Green))
-        haloboard.show()
+        rgbledring.setPixelColor(i, rgbledring.colors(PixelColors.Green))
+        rgbledring.show()
         basic.pause(100)
     }
    
     let br = 100;
-    haloboard.setBrightness(100);
+    rgbledring.setBrightness(100);
     input.onButtonPressed(Button.B, () => {
         br = br + 20;
         if (br > 255) {
             br = 5;
         }
-        haloboard.setBrightness(br);
+        rgbledring.setBrightness(br);
     });
 
     let rotationMode = false;
@@ -59,7 +59,7 @@
         let x = input.acceleration(Dimension.X) >> 1
         let y = input.acceleration(Dimension.Y) >> 1
         let z = input.acceleration(Dimension.Z) >> 1
-        haloboard.show();
+        rgbledring.show();
         basic.pause(100);
     }
 }

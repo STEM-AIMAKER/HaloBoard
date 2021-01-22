@@ -40,11 +40,7 @@ enum Mode {
  * Functions to operate Halo Board.
  */
 //% weight=5 color=#2699BF icon="\uf110" block="AIMaker: RGB LED Ring"
-namespace haloboard {
-    /**
-     * A Halo Board
-     */
-
+namespace rgbledring {
         let _buf: Buffer;
         let _pin: DigitalPin;
         
