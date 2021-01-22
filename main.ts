@@ -1,9 +1,7 @@
 
-//% weight=5 color=#2699BF icon="\uf110" block="AIMaker: RGB LED Ring"
+//% color=#2699BF icon="\uf110" block="AIMaker: RGB LED Ring"
 namespace rgbledring {
-        /**
-     * Well known colors for a Pixel strip
-     */
+
     export enum PixelColors {
         //% block=red
         Red = 0xFF0000,
@@ -27,9 +25,6 @@ namespace rgbledring {
         Black = 0x000000
     }
 
-    /**
-     * Different modes
-     */
     export enum Mode {
         //% block="RGB (GRB format)"
         RGB = 0,
@@ -41,13 +36,18 @@ namespace rgbledring {
 
 
         let _buf: Buffer;
-        let _pin: DigitalPin;
-        
+        let _pin: DigitalPin;        
         let _brightness: number;
         let _start: number; // start offset in board
         let _length: number; // number of LEDs
         let _mode: Mode;
 
+        //% blockId="setbrightness" block="Set brightness %brightness"
+        //% brightness.defl=255 brightness.min=0 brightness.max=255
+        export function setBrightness(brightness: number): void {
+            _brightness = brightness & 0xff;
+        }
+        
         //% blockId="rgb" block="red %red|green %green|blue %blue"
         export function rgb(red: number, green: number, blue: number): number {
             return packRGB(red, green, blue);
@@ -63,23 +63,6 @@ namespace rgbledring {
             rgbValue = rgbValue >> 0;
             setAllRGB(rgbValue);
             show();
-        }
-
-        function setPixelWhiteLED(pixeloffset: number, white: number): void {            
-            if (_mode === Mode.RGBW) {
-                setPixelW(pixeloffset >> 0, white >> 0);
-            }
-        }
-
-        function length() {
-            return _length;
-        }
-
-        //% blockId="setbrightness" block="Set brightness %brightness"
-        //% brightness.defl=255 brightness.min=0 brightness.max=255
-        //% advanced=true
-        export function setBrightness(brightness: number): void {
-            _brightness = brightness & 0xff;
         }
 
         //% blockId="clear" block="clear"
@@ -169,6 +152,16 @@ namespace rgbledring {
             _mode = mode
             _brightness = 128
             _buf = pins.createBuffer(numleds * stride);
+        }
+        
+        function setPixelWhiteLED(pixeloffset: number, white: number): void {            
+            if (_mode === Mode.RGBW) {
+                setPixelW(pixeloffset >> 0, white >> 0);
+            }
+        }
+
+        function length() {
+            return _length;
         }
 
         function easeBrightness(): void {
