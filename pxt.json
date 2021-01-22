@@ -1,6 +1,6 @@
 {
     "name": "RGB LED Ring",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "AIMaker RGB LED Ring driver base on neopixel",
     "license": "MIT",
     "dependencies": {
