@@ -1,5 +1,4 @@
-
-//% color=#2699BF icon="\uf110" block="AIMaker: RGB LED Ring"
+//% weight=5 color=#2699BF icon="\uf110" block="AIMaker: RGB LED Ring"
 namespace rgbledring {
 
     export enum PixelColors {
@@ -41,24 +40,36 @@ namespace rgbledring {
         let _start: number; // start offset in board
         let _length: number; // number of LEDs
         let _mode: Mode;
-
-/*
+     
         //% blockId="setbrightness" block="Set brightness %brightness"
         //% brightness.defl=255 brightness.min=0 brightness.max=255
         export function setBrightness(brightness: number): void {
             _brightness = brightness & 0xff;
         }
-        
+         
+        /**
+        * Converts red, green, blue channels into a RGB color
+        * @param red value of the red channel between 0 and 255. eg: 255
+        * @param green value of the green channel between 0 and 255. eg: 255
+        * @param blue value of the blue channel between 0 and 255. eg: 255
+        */
         //% blockId="rgb" block="red %red|green %green|blue %blue"
         export function rgb(red: number, green: number, blue: number): number {
             return packRGB(red, green, blue);
         }
-
+ 
+        /**
+        * Gets the RGB value of a known color
+        */
         //% blockId="inColors" block="%color"
         export function inColors(color: PixelColors): number {
             return color;
         }
 
+        /**
+        * Shows all LEDs to a given color (range 0-255 for r, g, b). 
+        * @param rgb RGB color of the LED
+        */
         //% blockId="showColor" block="Show color rgb=%rgbValue pixel_colors" 
         export function showColor(rgbValue: number) {
             rgbValue = rgbValue >> 0;
@@ -78,15 +89,17 @@ namespace rgbledring {
             ws2812b.sendBuffer(_buf, _pin);
         }
 
-        //% blockId="setPixelColor" block="Set pixel color at %pixeloffset|to %rgb=colors" 
-        //% pixeloffset.min=1
-        export function setPixelColor(pixeloffset: number, rgb: number): void {
-            if( pixeloffset > 0 )
-                pixeloffset -= 1
-            setPixelRGB(pixeloffset >> 0, rgb >> 0);
+        //% blockId="setPixelColor" block="Set pixel color at %offset|to %crgb" 
+        //% offset.min=1
+        export function setPixelColor(offset: number, crgb: number): void {
+            if( offset > 0 )
+                offset -= 1
+            setPixelRGB(offset >> 0, crgb >> 0);
         }
-       
+    
         //% blockId="showRainbow" block="Show rainbow from %startHue|to %endHue" 
+        //% startHue.defl=1
+        //% endHue.defl=360
         export function showRainbow(startHue: number = 1, endHue: number = 360) {
             if (_length <= 0) return;
 
@@ -142,17 +155,17 @@ namespace rgbledring {
                 setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
             }
             show();
-        }*/
+        }
     
         //% blockId="initLEDRing" block="Set RGB LED Ring at pin %pin|with %numleds|leds as %mode"
         export function initLEDRing(pin: DigitalPin, numleds: number, mode: Mode) {
             _pin = pin
             _start = 0
             _length = numleds
-            let stride = mode === Mode.RGBW ? 4 : 3;
+            let stride2 = mode === Mode.RGBW ? 4 : 3;
             _mode = mode
             _brightness = 128
-            _buf = pins.createBuffer(numleds * stride);
+            _buf = pins.createBuffer(numleds * stride2);
         }
         
         function setPixelWhiteLED(pixeloffset: number, white: number): void {            
@@ -166,22 +179,22 @@ namespace rgbledring {
         }
 
         function easeBrightness(): void {
-            const stride = _mode === Mode.RGBW ? 4 : 3;
+            const stride22 = _mode === Mode.RGBW ? 4 : 3;
             const br = _brightness;
             const buf = _buf;
             const end = _start + _length;
             const mid = Math.idiv(_length, 2);
-            for (let i = _start; i < end; ++i) {
-                const k = i - _start;
-                const ledoffset = i * stride;
-                const br = k > mid
+            for (let j = _start; j < end; ++j) {
+                const k = j - _start;
+                const ledoffset = j * stride22;
+                const br2 = k > mid
                     ? Math.idiv(255 * (_length - 1 - k) * (_length - 1 - k), (mid * mid))
                     : Math.idiv(255 * k * k, (mid * mid));
-                const r = (buf[ledoffset + 0] * br) >> 8; buf[ledoffset + 0] = r;
-                const g = (buf[ledoffset + 1] * br) >> 8; buf[ledoffset + 1] = g;
-                const b = (buf[ledoffset + 2] * br) >> 8; buf[ledoffset + 2] = b;
-                if (stride == 4) {
-                    const w = (buf[ledoffset + 3] * br) >> 8; buf[ledoffset + 3] = w;
+                const r = (buf[ledoffset + 0] * br2) >> 8; buf[ledoffset + 0] = r;
+                const g = (buf[ledoffset + 1] * br2) >> 8; buf[ledoffset + 1] = g;
+                const b = (buf[ledoffset + 2] * br2) >> 8; buf[ledoffset + 2] = b;
+                if (stride22 == 4) {
+                    const w = (buf[ledoffset + 3] * br2) >> 8; buf[ledoffset + 3] = w;
                 }
             }
         }
@@ -193,13 +206,13 @@ namespace rgbledring {
         }
 
         function power(): number {
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            const end = _start + _length;
+            const stride3 = _mode === Mode.RGBW ? 4 : 3;
+            const end2 = _start + _length;
             let p = 0;
-            for (let i = _start; i < end; ++i) {
-                const ledoffset = i * stride;
-                for (let j = 0; j < stride; ++j) {
-                    p += _buf[i + j];
+            for (let m = _start; m < end2; ++m) {
+                const ledoffset2 = m * stride3;
+                for (let n = 0; n < stride3; ++n) {
+                    p += _buf[m + n];
                 }
             }
             return Math.idiv(length(), 2) /* 0.5mA per neopixel */
@@ -222,31 +235,31 @@ namespace rgbledring {
             let green = unpackG(rgb);
             let blue = unpackB(rgb);
 
-            const br = _brightness;
-            if (br < 255) {
-                red = (red * br) >> 8;
-                green = (green * br) >> 8;
-                blue = (blue * br) >> 8;
+            const br3 = _brightness;
+            if (br3 < 255) {
+                red = (red * br3) >> 8;
+                green = (green * br3) >> 8;
+                blue = (blue * br3) >> 8;
             }
-            const end = _start + _length;
-            const stride = _mode === Mode.RGBW ? 4 : 3;
-            for (let i = _start; i < end; ++i) {
-                setBufferRGB(i * stride, red, green, blue)
+            const end3 = _start + _length;
+            const stride4 = _mode === Mode.RGBW ? 4 : 3;
+            for (let o = _start; o < end3; ++o) {
+                setBufferRGB(o * stride4, red, green, blue)
             }
         }
         function setAllW(white: number) {
             if (_mode !== Mode.RGBW)
                 return;
 
-            let br = _brightness;
-            if (br < 255) {
-                white = (white * br) >> 8;
+            let br4 = _brightness;
+            if (br4 < 255) {
+                white = (white * br4) >> 8;
             }
-            let buf = _buf;
-            let end = _start + _length;
-            for (let i = _start; i < end; ++i) {
-                let ledoffset = i * 4;
-                buf[ledoffset + 3] = white;
+            let buf2 = _buf;
+            let end4 = _start + _length;
+            for (let q = _start; q < end4; ++q) {
+                let ledoffset3 = q * 4;
+                buf2[ledoffset3 + 3] = white;
             }
         }
         function setPixelRGB(pixeloffset: number, rgb: number): void {
@@ -254,20 +267,20 @@ namespace rgbledring {
                 || pixeloffset >= _length)
                 return;
 
-            let stride = _mode === Mode.RGBW ? 4 : 3;
-            pixeloffset = (pixeloffset + _start) * stride;
+            let stride5 = _mode === Mode.RGBW ? 4 : 3;
+            pixeloffset = (pixeloffset + _start) * stride5;
 
-            let red = unpackR(rgb);
-            let green = unpackG(rgb);
-            let blue = unpackB(rgb);
+            let red2 = unpackR(rgb);
+            let green2 = unpackG(rgb);
+            let blue2 = unpackB(rgb);
 
-            let br = _brightness;
-            if (br < 255) {
-                red = (red * br) >> 8;
-                green = (green * br) >> 8;
-                blue = (blue * br) >> 8;
+            let br5 = _brightness;
+            if (br5 < 255) {
+                red2 = (red2 * br5) >> 8;
+                green2 = (green2 * br5) >> 8;
+                blue2 = (blue2 * br5) >> 8;
             }
-            setBufferRGB(pixeloffset, red, green, blue)
+            setBufferRGB(pixeloffset, red2, green2, blue2)
         }
         function setPixelW(pixeloffset: number, white: number): void {
             if (_mode !== Mode.RGBW)
@@ -279,12 +292,12 @@ namespace rgbledring {
 
             pixeloffset = (pixeloffset + _start) * 4;
 
-            let br = _brightness;
-            if (br < 255) {
-                white = (white * br) >> 8;
+            let br6 = _brightness;
+            if (br6 < 255) {
+                white = (white * br6) >> 8;
             }
-            let buf = _buf;
-            buf[pixeloffset + 3] = white;
+            let buf3 = _buf;
+            buf3[pixeloffset + 3] = white;
         }
     
 
@@ -292,16 +305,16 @@ namespace rgbledring {
         return ((a & 0xFF) << 16) | ((b & 0xFF) << 8) | (c & 0xFF);
     }
     function unpackR(rgb: number): number {
-        let r = (rgb >> 16) & 0xFF;
-        return r;
+        let t = (rgb >> 16) & 0xFF;
+        return t;
     }
     function unpackG(rgb: number): number {
-        let g = (rgb >> 8) & 0xFF;
-        return g;
+        let u = (rgb >> 8) & 0xFF;
+        return u;
     }
     function unpackB(rgb: number): number {
-        let b = (rgb) & 0xFF;
-        return b;
+        let c = (rgb) & 0xFF;
+        return c;
     }
 
     function hsl(h: number, s: number, l: number): number {
@@ -312,32 +325,32 @@ namespace rgbledring {
         h = h % 360;
         s = Math.clamp(0, 99, s);
         l = Math.clamp(0, 99, l);
-        let c = Math.idiv((((100 - Math.abs(2 * l - 100)) * s) << 8), 10000); //chroma, [0,255]
-        let h1 = Math.idiv(h, 60);//[0,6]
-        let h2 = Math.idiv((h - h1 * 60) * 256, 60);//[0,255]
-        let temp = Math.abs((((h1 % 2) << 8) + h2) - 256);
-        let x = (c * (256 - (temp))) >> 8;//[0,255], second largest component of this color
+        let d = Math.idiv((((100 - Math.abs(2 * l - 100)) * s) << 8), 10000); //chroma, [0,255]
+        let h12 = Math.idiv(h, 60);//[0,6]
+        let h22 = Math.idiv((h - h12 * 60) * 256, 60);//[0,255]
+        let temp = Math.abs((((h12 % 2) << 8) + h22) - 256);
+        let x = (d * (256 - (temp))) >> 8;//[0,255], second largest component of this color
         let r$: number;
         let g$: number;
         let b$: number;
-        if (h1 == 0) {
-            r$ = c; g$ = x; b$ = 0;
-        } else if (h1 == 1) {
-            r$ = x; g$ = c; b$ = 0;
-        } else if (h1 == 2) {
-            r$ = 0; g$ = c; b$ = x;
-        } else if (h1 == 3) {
-            r$ = 0; g$ = x; b$ = c;
-        } else if (h1 == 4) {
-            r$ = x; g$ = 0; b$ = c;
-        } else if (h1 == 5) {
-            r$ = c; g$ = 0; b$ = x;
+        if (h12 == 0) {
+            r$ = d; g$ = x; b$ = 0;
+        } else if (h12 == 1) {
+            r$ = x; g$ = d; b$ = 0;
+        } else if (h12 == 2) {
+            r$ = 0; g$ = d; b$ = x;
+        } else if (h12 == 3) {
+            r$ = 0; g$ = x; b$ = d;
+        } else if (h12 == 4) {
+            r$ = x; g$ = 0; b$ = d;
+        } else if (h12 == 5) {
+            r$ = d; g$ = 0; b$ = x;
         }
-        let m = Math.idiv((Math.idiv((l * 2 << 8), 100) - c), 2);
-        let r = r$ + m;
-        let g = g$ + m;
-        let b = b$ + m;
-        return packRGB(r, g, b);
+        let v = Math.idiv((Math.idiv((l * 2 << 8), 100) - d), 2);
+        let a = r$ + v;
+        let e = g$ + v;
+        let f = b$ + v;
+        return packRGB(a, e, f);
     }
 
     export enum HueInterpolationDirection {
