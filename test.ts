@@ -1,6 +1,6 @@
 {
     rgbledring.initLEDRing(DigitalPin.P0,12, rgbledring.Mode.RGB);
-
+/*
     rgbledring.showRainbow();
     for (let i = 0; i <= 12; i++) { 
         rgbledring.show();
@@ -61,5 +61,5 @@
         let z = input.acceleration(Dimension.Z) >> 1
         rgbledring.show();
         basic.pause(100);
-    }
+    }*/
 }

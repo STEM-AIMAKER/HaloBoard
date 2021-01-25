@@ -42,6 +42,7 @@ namespace rgbledring {
         let _length: number; // number of LEDs
         let _mode: Mode;
 
+/*
         //% blockId="setbrightness" block="Set brightness %brightness"
         //% brightness.defl=255 brightness.min=0 brightness.max=255
         export function setBrightness(brightness: number): void {
@@ -141,7 +142,7 @@ namespace rgbledring {
                 setPixelColor(steps - 1, hsl(endHue, saturation, luminance));
             }
             show();
-        }
+        }*/
     
         //% blockId="initLEDRing" block="Set RGB LED Ring at pin %pin|with %numleds|leds as %mode"
         export function initLEDRing(pin: DigitalPin, numleds: number, mode: Mode) {
