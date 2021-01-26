@@ -40,43 +40,7 @@ namespace rgbledring {
         let _start: number; // start offset in board
         let _length: number; // number of LEDs
         let _mode: Mode;
-     
-        //% blockId="setbrightness" block="Set brightness %brightness"
-        //% brightness.defl=255 brightness.min=0 brightness.max=255
-        export function setBrightness(brightness: number): void {
-            _brightness = brightness & 0xff;
-        }
-         
-        /**
-        * Converts red, green, blue channels into a RGB color
-        * @param red value of the red channel between 0 and 255. eg: 255
-        * @param green value of the green channel between 0 and 255. eg: 255
-        * @param blue value of the blue channel between 0 and 255. eg: 255
-        */
-        //% blockId="rgb" block="red %red|green %green|blue %blue"
-        export function rgb(red: number, green: number, blue: number): number {
-            return packRGB(red, green, blue);
-        }
- 
-        /**
-        * Gets the RGB value of a known color
-        */
-        //% blockId="inColors" block="%color"
-        export function inColors(color: PixelColors): number {
-            return color;
-        }
-
-        /**
-        * Shows all LEDs to a given color (range 0-255 for r, g, b). 
-        * @param rgb RGB color of the LED
-        */
-        //% blockId="showColor" block="Show color rgb=%rgbValue pixel_colors" 
-        export function showColor(rgbValue: number) {
-            rgbValue = rgbValue >> 0;
-            setAllRGB(rgbValue);
-            show();
-        }
-
+      
         //% blockId="clear" block="clear"
         export function clear(): void {
             const stride = _mode === Mode.RGBW ? 4 : 3;
@@ -88,15 +52,26 @@ namespace rgbledring {
         export function show() {
             ws2812b.sendBuffer(_buf, _pin);
         }
-
-        //% blockId="setPixelColor" block="Set pixel color at %offset|to %crgb" 
-        //% offset.min=1 offset.defl=1
-        export function setPixelColor(offset: number, crgb: number): void {
-            if( offset > 0 )
-                offset -= 1
-            setPixelRGB(offset >> 0, crgb >> 0);
+        
+        /**
+        * Converts red, green, blue channels into a RGB color
+        * @param red value of the red channel between 0 and 255. eg: 255
+        * @param green value of the green channel between 0 and 255. eg: 255
+        * @param blue value of the blue channel between 0 and 255. eg: 255
+        */
+        //% blockId="rgb" block="red %red|green %green|blue %blue"
+        export function rgb(red: number, green: number, blue: number): number {
+            return packRGB(red, green, blue);
         }
-    
+
+        /**
+        * Gets the RGB value of a known color
+        */
+        //% blockId="inColors" block="%color"
+        export function inColors(color: PixelColors): number {
+            return color;
+        }
+
         //% blockId="showRainbow" block="Show rainbow from %startHue|to %endHue" 
         //% startHue.defl=1
         //% endHue.defl=360
@@ -156,7 +131,32 @@ namespace rgbledring {
             }
             show();
         }
-    
+
+        /**
+        * Shows all LEDs to a given color (range 0-255 for r, g, b). 
+        * @param rgb RGB color of the LED
+        */
+        //% blockId="showColor" block="Show color rgb=%rgbValue pixel_colors" 
+        export function showColor(rgbValue: number) {
+            rgbValue = rgbValue >> 0;
+            setAllRGB(rgbValue);
+            show();
+        }
+
+        //% blockId="setPixelColor" block="Set pixel color at %offset|to %crgb" 
+        //% offset.min=1 offset.defl=1
+        export function setPixelColor(offset: number, crgb: number): void {
+            if( offset > 0 )
+                offset -= 1
+            setPixelRGB(offset >> 0, crgb >> 0);
+        }
+
+        //% blockId="setbrightness" block="Set brightness %brightness"
+        //% brightness.defl=255 brightness.min=0 brightness.max=255
+        export function setBrightness(brightness: number): void {
+            _brightness = brightness & 0xff;
+        }
+         
         //% blockId="initLEDRing" block="Set RGB LED Ring at pin %pin|with %numleds|leds as %mode"
         export function initLEDRing(pin: DigitalPin, numleds: number, mode: Mode) {
             _pin = pin
