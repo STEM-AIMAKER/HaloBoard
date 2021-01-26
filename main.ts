@@ -90,7 +90,7 @@ namespace rgbledring {
         }
 
         //% blockId="setPixelColor" block="Set pixel color at %offset|to %crgb" 
-        //% offset.min=1
+        //% offset.min=1 offset.defl=1
         export function setPixelColor(offset: number, crgb: number): void {
             if( offset > 0 )
                 offset -= 1
@@ -107,7 +107,7 @@ namespace rgbledring {
             endHue = endHue >> 0;
             const saturation = 100;
             const luminance = 50;
-            const steps = _length;
+            const steps = _length+1;
             const direction = HueInterpolationDirection.Clockwise;
 
             //hue
